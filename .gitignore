@@ -1,4 +1,7 @@
  .venv
  dist/
- __pycache__/
+**/__pycache__/
+__pycache__/
+*.pyc
  *.egg-info
+ .ruff_cache/
