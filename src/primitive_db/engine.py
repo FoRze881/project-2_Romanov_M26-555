@@ -66,9 +66,11 @@ def run():
                print(f'Команда введена неправильно')
                continue
             table_name = args[1]
-            meta.update(core.drop_table(meta, table_name=table_name))
+            new_meta = core.drop_table(meta, table_name=table_name)
+            meta.update(new_meta)
             utils.save_metadata('.', meta)
-            print(f'Таблица {table_name} удалена')
+            if new_meta:
+               print(f'Таблица {table_name} удалена')
 
          case 'help':
             print_help()
