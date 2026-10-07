@@ -18,7 +18,7 @@ def drop_table(metadata, table_name):
     '''Удаляет таблицу'''
     if table_name not in metadata:
         print(f'Ошибка: таблицы {table_name} не существует, поэтому нельзя удалить')
-        return metadata
+        return {}
 
     _ = metadata.pop(table_name, None)
     return metadata
