@@ -49,9 +49,14 @@ def run():
                col_name, col_type = col.split(':')
                columns[col_name] = col_type
 
-            meta.update(core.create_table(metadata=meta, table_name=table_name, columns=columns))
+            new_meta = core.create_table(metadata=meta, table_name=table_name, columns=columns)
+            meta.update(new_meta)
             utils.save_metadata('.', meta)
-            print(f'Таблица {table_name} создана')
+
+            if new_meta:
+               print(f'Таблица {table_name} создана')
+            else:
+               print(f'Таблица {table_name} не создана')
 
          case 'list_tables':
             print(meta)
