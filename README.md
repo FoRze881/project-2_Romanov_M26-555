@@ -11,3 +11,6 @@
 Общие команды:
    <command> exit - выход из программы
    <command> help - справочная информация
+
+Демонстация работы программы: 
+[![asciicast](https://asciinema.org/a/TWOui6ypOvQegy8B.svg)](https://asciinema.org/a/TWOui6ypOvQegy8B)
