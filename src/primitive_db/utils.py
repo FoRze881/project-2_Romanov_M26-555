@@ -31,6 +31,7 @@ def load_table_data(table_name):
 
 def save_table_data(table_name, data):
     '''Сохраняет данные в таблицу'''
+    os.makedirs('data', exist_ok=True)
     full_path = os.path.join('data/', f'{table_name}.json')
     with open(full_path, 'w') as f:
         json.dump(data, f)
