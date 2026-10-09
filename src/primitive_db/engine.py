@@ -193,9 +193,32 @@ def run():
             utils.save_table_data(table_name, new_table_data)
             print(f'Обновлено записей: {count}')
 
-
          case 'delete':
-            pass
+            if len(args) < 3 or args[1].lower() != 'from':
+               print('Ошибка: неправильный формат вызова функции')
+               continue
+
+            table_name = args[2]
+            if table_name not in meta:
+               print(f'Таблицы {table_name} нет в базе данных')
+               continue
+
+            where_clause = None
+            if len(args) > 3:
+               parsed_clause = parser.parse_comp_func(args[3:])
+               if parsed_clause is None:
+                  continue
+               if parsed_clause['set'] is not None:
+                  print('Ошибка: нельзя передавать set в delete')
+                  continue
+               where_clause = parsed_clause['where']
+               if not check_clause(meta, table_name, where_clause):
+                  continue
+
+            table_data = utils.load_table_data(table_name)
+            new_table_data = core.delete(table_data, where_clause)
+            utils.save_table_data(table_name, new_table_data)
+            print(f'Удалено записей: {len(table_data) - len(new_table_data)}')
 
          case 'info':
             if len(args) != 2:
