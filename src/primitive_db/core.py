@@ -1,7 +1,8 @@
 '''Здесь будет основная логика работы с таблицами и данными.'''
-from primitive_db import constants, parser, utils
+from primitive_db import constants, decorators, parser, utils
 
 
+@decorators.handle_db_errors
 def create_table(metadata, table_name, columns):
     '''Проверяет все условия для создания таблицы и создает ее метаданные, если можно
     в формате {название_таблицы: {столбец_1:тип_столбца ...}}
@@ -20,6 +21,7 @@ def create_table(metadata, table_name, columns):
 
     return metadata
 
+@decorators.handle_db_errors
 def drop_table(metadata, table_name):
     '''Удаляет метаданные таблицы, если она есть
     Возвращает None в противном случае'''
@@ -29,6 +31,7 @@ def drop_table(metadata, table_name):
     _ = metadata.pop(table_name, None)
     return metadata
 
+@decorators.handle_db_errors
 def insert(metadata, table_name, values):
     '''Добавляет новую запись (в виде словаря) в данные таблицы
     Таблица у нас выглядит вот так: [{столбец_1:значение, столбец_2:значние}
@@ -62,6 +65,7 @@ def insert(metadata, table_name, values):
     data.append({'ID': new_id, **record})
     return data
 
+@decorators.handle_db_errors
 def select(table_data, where_clause=None):
     '''Возвращает заданные данные'''
     if not where_clause:
@@ -72,6 +76,7 @@ def select(table_data, where_clause=None):
         if all(row.get(column) == value for column, value in where_clause.items())
     ]
 
+@decorators.handle_db_errors
 def update(table_data, set_clause, where_clause):
     '''Обновляет записи по where_clause
     Возвращает измененный список словарей (потому что ссылки)'''
@@ -81,6 +86,7 @@ def update(table_data, set_clause, where_clause):
 
     return table_data
 
+@decorators.handle_db_errors
 def delete(table_data, where_clause):
     '''Удаляет записи по where_clause
     Возвращает новый список словарей (то есть новую таблицу)'''

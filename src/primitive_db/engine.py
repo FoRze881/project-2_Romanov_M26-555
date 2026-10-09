@@ -160,6 +160,9 @@ def run():
             else:
                new_data = core.select(utils.load_table_data(table))
 
+            if new_data is None:
+               continue
+
             print_table(new_data, list(meta[table].keys()))
 
          case 'update':
@@ -192,6 +195,8 @@ def run():
             table_data = utils.load_table_data(table_name)
             count = len(core.select(table_data, where_clause))
             new_table_data = core.update(table_data, set_clause, where_clause)
+            if new_table_data is None:
+               continue
             utils.save_table_data(table_name, new_table_data)
             print(f'Обновлено записей: {count}')
 
@@ -219,6 +224,8 @@ def run():
 
             table_data = utils.load_table_data(table_name)
             new_table_data = core.delete(table_data, where_clause)
+            if new_table_data is None:
+               continue
             utils.save_table_data(table_name, new_table_data)
             print(f'Удалено записей: {len(table_data) - len(new_table_data)}')
 
