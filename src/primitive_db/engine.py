@@ -1,11 +1,12 @@
 '''Этот файл будет отвечать за запуск, игровой цикл и парсинг команд.'''
 
 import shlex
-import prettytable
 
+import prettytable
 import prompt
 
-from primitive_db import core, utils, parser
+from primitive_db import core, parser, utils
+
 
 def print_help():
    """Prints the help message for the current mode."""
@@ -108,7 +109,8 @@ def run():
             table_name = args[1]
             new_meta = core.drop_table(meta, table_name=table_name)
             if new_meta is None:
-               print(f'Ошибка: таблицы {table_name} не существует, поэтому нельзя удалить')
+               print(f'Ошибка: таблицы {table_name} не существует, '
+                     f'поэтому нельзя удалить')
             else:
                meta.update(new_meta)
                utils.save_metadata('.', meta)

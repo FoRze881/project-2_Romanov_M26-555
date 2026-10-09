@@ -1,6 +1,6 @@
 '''Здесь будет основная логика работы с таблицами и данными.'''
-from primitive_db import utils
-from primitive_db import constants, parser
+from primitive_db import constants, parser, utils
+
 
 def create_table(metadata, table_name, columns):
     '''Проверяет все условия для создания таблицы и создает ее метаданные, если можно
