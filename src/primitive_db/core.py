@@ -33,6 +33,7 @@ def drop_table(metadata, table_name):
     return metadata
 
 @decorators.handle_db_errors
+@decorators.log_time
 def insert(metadata, table_name, values):
     '''Добавляет новую запись (в виде словаря) в данные таблицы
     Таблица у нас выглядит вот так: [{столбец_1:значение, столбец_2:значние}
@@ -67,6 +68,7 @@ def insert(metadata, table_name, values):
     return data
 
 @decorators.handle_db_errors
+@decorators.log_time
 def select(table_data, where_clause=None):
     '''Возвращает заданные данные'''
     if not where_clause:

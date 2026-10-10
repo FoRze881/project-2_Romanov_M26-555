@@ -1,5 +1,6 @@
 '''Декораторы проекта'''
 from functools import wraps
+import time
 
 
 def handle_db_errors(func):
@@ -32,3 +33,15 @@ def confirm_action(action_name):
             return func(*args, **kwargs)
         return wrapper
     return decorator
+
+def log_time(func):
+    '''Замеряет время работы функции'''
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start_time = time.monotonic()
+        result = func(*args, **kwargs)
+        stop_time = time.monotonic()
+        elapsed = stop_time - start_time
+        print(f'Функция {func.__name__} выполнилась за {elapsed:.3f} секунд')
+        return result
+    return wrapper
