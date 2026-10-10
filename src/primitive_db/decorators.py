@@ -1,6 +1,6 @@
 '''Декораторы проекта'''
-from functools import wraps
 import time
+from functools import wraps
 
 
 def handle_db_errors(func):
@@ -45,3 +45,18 @@ def log_time(func):
         print(f'Функция {func.__name__} выполнилась за {elapsed:.3f} секунд')
         return result
     return wrapper
+
+def create_cacher():
+    '''Создаёт функцию кэширования, кэш хранится в замыкании'''
+    cache = {}
+
+    def cache_result(key, value_func):
+        '''Возвращает результат из кэша по ключу,
+        а если его нет - вычисляет через value_func и сохраняет'''
+        if key in cache:
+            return cache[key]
+        result = value_func()
+        cache[key] = result
+        return result
+
+    return cache_result
