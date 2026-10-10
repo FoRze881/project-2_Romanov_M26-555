@@ -107,6 +107,9 @@ def run():
                print('Команда введена неправильно')
                continue
             table_name = args[1]
+            if table_name not in meta:
+               print(f'Ошибка: таблицы {table_name} нет в базе данных')
+               continue
             new_meta = core.drop_table(meta, table_name=table_name)
             if new_meta is None:
                print(f'Ошибка: таблицы {table_name} не существует, '

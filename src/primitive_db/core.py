@@ -22,6 +22,7 @@ def create_table(metadata, table_name, columns):
     return metadata
 
 @decorators.handle_db_errors
+@decorators.confirm_action('удаление таблицы')
 def drop_table(metadata, table_name):
     '''Удаляет метаданные таблицы, если она есть
     Возвращает None в противном случае'''
@@ -87,6 +88,7 @@ def update(table_data, set_clause, where_clause):
     return table_data
 
 @decorators.handle_db_errors
+@decorators.confirm_action('удаление записей таблицы')
 def delete(table_data, where_clause):
     '''Удаляет записи по where_clause
     Возвращает новый список словарей (то есть новую таблицу)'''
