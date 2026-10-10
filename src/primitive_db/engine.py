@@ -5,7 +5,7 @@ import shlex
 import prettytable
 import prompt
 
-from primitive_db import core, parser, utils
+from primitive_db import core, decorators, parser, utils
 
 
 def print_help():
@@ -65,6 +65,7 @@ def print_table(rows, columns):
 
 def run():
    print_help()
+   cacher = decorators.create_cacher()
 
    while True:
       meta = utils.load_metadata('./')
@@ -95,6 +96,7 @@ def run():
                meta.update(new_meta)
                utils.save_metadata('.', meta)
                print(f'Таблица {table_name} создана')
+               cacher = decorators.create_cacher()
 
             else:
                print(f'Таблица {table_name} не создана')
@@ -107,14 +109,17 @@ def run():
                print('Команда введена неправильно')
                continue
             table_name = args[1]
+            if table_name not in meta:
+               print(f'Ошибка: таблицы {table_name} нет в базе данных')
+               continue
             new_meta = core.drop_table(meta, table_name=table_name)
             if new_meta is None:
-               print(f'Ошибка: таблицы {table_name} не существует, '
-                     f'поэтому нельзя удалить')
+               continue
             else:
                meta.update(new_meta)
                utils.save_metadata('.', meta)
                print(f'Таблица {table_name} удалена')
+               cacher = decorators.create_cacher()
 
          case 'insert':
             if len(args) <= 4:
@@ -134,6 +139,7 @@ def run():
                continue
 
             utils.save_table_data(table, data)
+            cacher = decorators.create_cacher()
 
          case 'select':
             if len(args) < 3:
@@ -145,20 +151,23 @@ def run():
                print(f'Ошибка: таблицы {table} нет в базе данных')
                continue
 
+            where_clause = None
             if len(args) > 3:
-               where_clause = args[3:]
-               parsed_clause = parser.parse_comp_func(where_clause)
+               parsed_clause = parser.parse_comp_func(args[3:])
                if parsed_clause is None:
                   continue
-
-               if not check_clause(meta, table, parsed_clause['where']):
-                  print(f'Ошибка: в таблице {table} нет таких столбцов')
+               if parsed_clause['set'] is not None:
+                  print('Ошибка: нельзя передавать set в select')
                   continue
-               new_data = core.select(utils.load_table_data(table), 
-                                      parsed_clause['where'])
+               where_clause = parsed_clause['where']
+               if not check_clause(meta, table, where_clause):
+                  continue
 
-            else:
-               new_data = core.select(utils.load_table_data(table))
+            key = f'{table} {where_clause}'
+            new_data = cacher(key, lambda: core.select(utils.load_table_data(table),
+                                                       where_clause))
+            if new_data is None:
+               continue
 
             print_table(new_data, list(meta[table].keys()))
 
@@ -192,8 +201,11 @@ def run():
             table_data = utils.load_table_data(table_name)
             count = len(core.select(table_data, where_clause))
             new_table_data = core.update(table_data, set_clause, where_clause)
+            if new_table_data is None:
+               continue
             utils.save_table_data(table_name, new_table_data)
             print(f'Обновлено записей: {count}')
+            cacher = decorators.create_cacher()
 
          case 'delete':
             if len(args) < 3 or args[1].lower() != 'from':
@@ -219,8 +231,11 @@ def run():
 
             table_data = utils.load_table_data(table_name)
             new_table_data = core.delete(table_data, where_clause)
+            if new_table_data is None:
+               continue
             utils.save_table_data(table_name, new_table_data)
             print(f'Удалено записей: {len(table_data) - len(new_table_data)}')
+            cacher = decorators.create_cacher()
 
          case 'info':
             if len(args) != 2:
